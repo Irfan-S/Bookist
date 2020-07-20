@@ -1,6 +1,5 @@
 import 'package:bookist_app/scrollable_bookshelf_bottom_sheet.dart';
 import 'package:bookist_app/sliding_cards.dart';
-import 'package:bookist_app/tabs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -74,27 +73,27 @@ class HomePage extends StatelessWidget {
                   ],
                 ))));
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 8),
-                Header(),
-                SizedBox(height: 40),
-                Tabs(),
-                SizedBox(height: 8),
-                SlidingCardsView(),
-              ],
-            ),
-          ),
-          ScrollableBookshelfSheet(), //use this or ScrollableExhibitionSheet//
-        ],
-      ),
-    );
+//    return Scaffold(
+//      backgroundColor: Colors.white,
+//      body: Stack(
+//        children: <Widget>[
+//          SafeArea(
+//            child: Column(
+//              crossAxisAlignment: CrossAxisAlignment.start,
+//              children: <Widget>[
+//                SizedBox(height: 8),
+//                Header(),
+//                SizedBox(height: 40),
+//                Tabs(),
+//                SizedBox(height: 8),
+//                SlidingCardsView(),
+//              ],
+//            ),
+//          ),
+//          ScrollableBookshelfSheet(), //use this or ScrollableExhibitionSheet//
+//        ],
+//      ),
+//    );
   }
 }
 
