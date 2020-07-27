@@ -41,5 +41,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We use this permission to add your own images for books</string>
+
+   <key>NSCameraUsageDescription</key>
+   <string>We use this permission to allow you to click images of your books directly</string>
+
+
 </dict>
 </plist>

@@ -5,7 +5,6 @@ import 'package:bookist_app/data/book.dart';
 import 'package:flutter/material.dart';
 
 ///Notice that by default this class is not used
-///Go to [home_page.dart] and replace [ExhibitionBottomSheet] with [ScrollableBookshelfSheet] to use it
 class ScrollableBookshelfSheet extends StatefulWidget {
   @override
   _ScrollableBookshelfSheetState createState() =>

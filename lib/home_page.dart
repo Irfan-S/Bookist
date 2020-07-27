@@ -1,3 +1,4 @@
+import 'package:bookist_app/add_new_book.dart';
 import 'package:bookist_app/scrollable_bookshelf_bottom_sheet.dart';
 import 'package:bookist_app/sliding_cards.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,31 +48,46 @@ class HomePage extends StatelessWidget {
                   ]),
             ),
             body: Scaffold(
-                backgroundColor: Colors.white,
-                body: TabBarView(
-                  children: [
-                    Stack(
-                      children: <Widget>[
-                        SafeArea(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SizedBox(height: 8),
-                              //Header(),
-                              SizedBox(height: 40),
-                              SizedBox(height: 8),
-                              SlidingCardsView(),
-                            ],
-                          ),
+              backgroundColor: Colors.white,
+              body: TabBarView(
+                children: [
+                  Stack(
+                    children: <Widget>[
+                      SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 8),
+                            //Header(),
+                            SizedBox(height: 40),
+                            SizedBox(height: 8),
+                            SlidingCardsView(),
+                          ],
                         ),
-                        ScrollableBookshelfSheet()
-                        //, //use this or ScrollableExhibitionSheet//
-                      ],
-                    ),
-                    Icon(Icons.directions_car),
-                    Icon(Icons.directions_transit)
-                  ],
-                ))));
+                      ),
+                      ScrollableBookshelfSheet()
+                      //, //use this or ScrollableExhibitionSheet//
+                    ],
+                  ),
+                  Icon(Icons.directions_car),
+                  Icon(Icons.directions_transit)
+                ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NewBookPage()),
+                  );
+                  // Add your onPressed code here!
+                },
+                child: Icon(
+                  Icons.add,
+                  color: Color(0xFF162A49),
+                ),
+                backgroundColor: Colors.white,
+              ),
+            )));
 
 //    return Scaffold(
 //      backgroundColor: Colors.white,
@@ -136,8 +152,8 @@ class _RectPainter extends BoxPainter {
 
   _RectPainter(Color color, this.radius)
       : _paint = Paint()
-          ..color = color
-          ..isAntiAlias = true;
+    ..color = color
+    ..isAntiAlias = true;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {
