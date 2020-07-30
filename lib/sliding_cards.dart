@@ -1,10 +1,16 @@
-import 'dart:math' as math;
+import 'dart:io';
 
 import 'package:bookist_app/data/book.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'data/book_storage.dart';
+
 class SlidingCardsView extends StatefulWidget {
+  final BookStorage bookStorage;
+
+  SlidingCardsView({Key key, @required this.bookStorage}) : super(key: key);
+
   @override
   _SlidingCardsViewState createState() => _SlidingCardsViewState();
 }
@@ -12,14 +18,50 @@ class SlidingCardsView extends StatefulWidget {
 class _SlidingCardsViewState extends State<SlidingCardsView> {
   PageController pageController;
   double pageOffset = 0;
+  List<Book> _books = [];
+
+  void _getBookList() async {
+    try {
+      String directory = await widget.bookStorage.localPath;
+      print("Directory is $directory");
+
+      List<Book> localBookList = [];
+      //Directory(directory).list().listen((event) {print(event.path);});
+      Directory(directory).list().listen((event) {
+        //print("File name ${event.path}");
+        if (event.path.endsWith(".txt")) {
+          //print("hit");
+          widget.bookStorage.readBook(event.path).then((value) =>
+              localBookList.add(value));
+        }
+      }).onDone(() {
+        setState(() {
+          if (_books.length <= localBookList.length) {
+            _books = localBookList;
+          }
+        });
+      });
+    } catch (e) {
+      print("Error reading book list");
+    }
+  }
+
 
   @override
   void initState() {
-    super.initState();
     pageController = PageController(viewportFraction: 0.8);
     pageController.addListener(() {
       setState(() => pageOffset = pageController.page);
     });
+    _getBookList();
+    super.initState();
+  }
+
+
+  @override
+  void didUpdateWidget(SlidingCardsView oldWidget) {
+    _getBookList();
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -31,67 +73,27 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.55,
-      child: PageView(
-          controller: pageController,
-          children: List.generate(
-              Book.books.length,
-              (index) => SlidingCard(
-                    title: Book.books[index].title,
-                    author: Book.books[index].author.toString(),
-                    assetName: Book.books[index].assetName,
-                    offset: pageOffset - index,
-                  ))
-//          SlidingCard(
-//            title: Book.books[0].title,
-//            author: Book.books[0].author.toString(),
-//            assetName: Book.books[0].assetName,
-//            offset: pageOffset,
-//          ),
-//          SlidingCard(
-//            title: Book.books[1].title,
-//            author: Book.books[1].author.toString(),
-//            assetName: Book.books[1].assetName,
-//            offset: pageOffset-1,
-//          ),
-//        ],
-          ),
+        height: MediaQuery
+            .of(context)
+            .size
+            .height * 0.55,
+        child: _books.isNotEmpty ? PageView(
+            controller: pageController,
+            children: List.generate(
+                _books.length,
+                    (index) =>
+                    SlidingCard(
+                      title: _books[index].title,
+                      author: _books[index].author.toString(),
+                      assetName: _books[index].assetName,
+                      offset: pageOffset - index,
+                    ))
+        )
+            : Center(child: Text("No books found"),)
     );
   }
 }
 
-//class SlidingCardsView extends StatelessWidget{
-//  @override
-//  Widget build(BuildContext context) {
-//    return GridView.count(
-//      crossAxisCount: 2,
-//      crossAxisSpacing: 10.0,
-//      shrinkWrap: true,
-//      scrollDirection: Axis.vertical,
-////      childAspectRatio: (MediaQuery.of(context).size.width * 0.5 / MediaQuery.of(context).size.height * 0.2),
-//      mainAxisSpacing: 10.0,
-//      children: List.generate(Book.books.length, (index) {
-//        return Padding(
-//          padding: const EdgeInsets.all(10.0),
-//          child: SizedBox(
-//      height: MediaQuery.of(context).size.height * 0.55,
-//      child: PageView(
-//        SlidingCard(title: Book.books[index].title, author: Book.books[index].author.toString(), assetName: Book.books[index].assetName)
-//
-////            decoration: BoxDecoration(
-////              image: DecorationImage(
-////                image: NetworkImage('img.png'),
-////                fit: BoxFit.cover,
-////              ),
-////              borderRadius:
-////              BorderRadius.all(Radius.circular(20.0),),
-////            ),
-//          );
-//      },),
-//    );
-//  }
-//
-//}
 
 class SlidingCard extends StatelessWidget {
   final String title;
@@ -109,7 +111,8 @@ class SlidingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double gauss = math.exp(-(math.pow((offset.abs() - 0.5), 2) / 0.08));
+    //print("Titile $title");
+    //double gauss = math.exp(-(math.pow((offset.abs() - 0.5), 2) / 0.08));
     return Card(
       margin: EdgeInsets.only(left: 8, right: 8, bottom: 24),
       elevation: 8,
@@ -120,9 +123,12 @@ class SlidingCard extends StatelessWidget {
         },
         child: ClipRRect(
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-          child: Image.asset(
-            'assets/$assetName',
-            height: MediaQuery.of(context).size.height * 0.3,
+          child: Image.file(
+            File(assetName),
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.3,
             alignment: Alignment(-offset.abs(), 0),
             fit: BoxFit.fitWidth,
           ),

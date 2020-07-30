@@ -1,26 +1,45 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:bookist_app/data/book_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'data/book.dart';
+
 class NewBookPage extends StatefulWidget {
+  final BookStorage bookStorage;
+
+  NewBookPage({Key key, @required this.bookStorage}) : super(key: key);
+
   @override
   _NewBookPageState createState() => _NewBookPageState();
 }
 
 class _NewBookPageState extends State<NewBookPage> {
   File _image;
+  String _imgPath;
   final picker = ImagePicker();
+
+  TextEditingController titleController = new TextEditingController();
+  TextEditingController authorController = new TextEditingController();
+  TextEditingController publisherController = new TextEditingController();
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
+      _imgPath = pickedFile.path;
       _image = File(pickedFile.path);
     });
+  }
+
+  Future<File> _createBook(Book book) {
+    // Write the variable as a string to the file.
+    return widget.bookStorage.writeBook(book);
   }
 
   @override
@@ -29,20 +48,22 @@ class _NewBookPageState extends State<NewBookPage> {
         appBar: AppBar(title: Header(), backgroundColor: Colors.white),
         body: Column(
           children: <Widget>[
-            Flexible(
-                fit: FlexFit.tight,
-                child: GestureDetector(
-                  onTap: () {
-                    getImage();
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(8),
-                      child: Center(
-                        child: _image == null
-                            ? Text('No image selected.')
-                            : Image.file(_image),
-                      )),
-                )),
+//            Flexible(
+//                fit: FlexFit.tight,
+            GestureDetector(
+              onTap: () {
+                getImage();
+              },
+              child: Container(
+                  height: 300,
+                  width: 300,
+                  padding: EdgeInsets.all(8),
+                  child: Center(
+                    child: _image == null
+                        ? Text('No image selected.')
+                        : Image.file(_image),
+                  )),
+            ),
             //TODO on search this should autofill the other dialogs.
             Padding(
               padding: EdgeInsets.all(12),
@@ -56,6 +77,7 @@ class _NewBookPageState extends State<NewBookPage> {
                         child: Padding(
                           padding: EdgeInsets.only(top: 12, left: 12),
                           child: TextField(
+                            controller: titleController,
                             maxLines: 2,
                             decoration: InputDecoration.collapsed(
                                 hintText: "Book Title"),
@@ -78,6 +100,7 @@ class _NewBookPageState extends State<NewBookPage> {
                           child: Padding(
                             padding: EdgeInsets.only(top: 12, left: 12),
                             child: TextField(
+                              controller: authorController,
                               maxLines: 2,
                               decoration:
                                   InputDecoration.collapsed(hintText: "Author"),
@@ -96,13 +119,29 @@ class _NewBookPageState extends State<NewBookPage> {
                             padding: EdgeInsets.only(top: 12, left: 12),
                             child: TextField(
                               maxLines: 2,
+                              controller: publisherController,
                               decoration: InputDecoration.collapsed(
                                   hintText: "Publisher"),
                             ),
                           ))),
                 ),
               ],
-            )
+            ),
+
+            RaisedButton(
+              onPressed: () {
+                Book book = Book.fromJson(json.decode(
+                    '{"assetName":"$_imgPath","isbn": "NA","title": "${titleController
+                        .text}","author":["${authorController
+                        .text}"],"description":"NA","publisher": "${publisherController
+                        .text}","notes": [], "chapters":[],"complete":false}'));
+                _createBook(book);
+                Navigator.pop(context);
+              },
+              color: Color(0xFF162A49),
+              child: const Text(
+                  'Done', style: TextStyle(fontSize: 20, color: Colors.white)),
+            ),
             //Book author card
           ],
         ));
@@ -131,3 +170,4 @@ class Header extends StatelessWidget {
         ));
   }
 }
+

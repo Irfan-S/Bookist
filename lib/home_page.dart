@@ -1,4 +1,5 @@
 import 'package:bookist_app/add_new_book.dart';
+import 'package:bookist_app/data/book_storage.dart';
 import 'package:bookist_app/scrollable_bookshelf_bottom_sheet.dart';
 import 'package:bookist_app/sliding_cards.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,11 +62,11 @@ class HomePage extends StatelessWidget {
                             //Header(),
                             SizedBox(height: 40),
                             SizedBox(height: 8),
-                            SlidingCardsView(),
+                            SlidingCardsView(bookStorage: BookStorage()),
                           ],
                         ),
                       ),
-                      ScrollableBookshelfSheet()
+                      ScrollableBookshelfSheet(bookStorage: BookStorage())
                       //, //use this or ScrollableExhibitionSheet//
                     ],
                   ),
@@ -77,7 +78,9 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NewBookPage()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            NewBookPage(bookStorage: BookStorage())),
                   );
                   // Add your onPressed code here!
                 },

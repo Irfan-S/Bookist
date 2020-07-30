@@ -1,11 +1,18 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:bookist_app/data/book.dart';
 import 'package:flutter/material.dart';
 
-///Notice that by default this class is not used
+import 'data/book_storage.dart';
+
 class ScrollableBookshelfSheet extends StatefulWidget {
+  final BookStorage bookStorage;
+
+  ScrollableBookshelfSheet({Key key, @required this.bookStorage})
+      : super(key: key);
+
   @override
   _ScrollableBookshelfSheetState createState() =>
       _ScrollableBookshelfSheetState();
@@ -13,6 +20,48 @@ class ScrollableBookshelfSheet extends StatefulWidget {
 
 class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
   double initialPercentage = 0.15;
+  List<Book> bookList = [];
+
+
+  void _getBookList() async {
+    try {
+      String directory = await widget.bookStorage.localPath;
+      print("Directory is $directory");
+
+      List<Book> localBookList = [];
+      //Directory(directory).list().listen((event) {print(event.path);});
+      Directory(directory).list().listen((event) {
+        //print("File name ${event.path}");
+        if (event.path.endsWith(".txt")) {
+          // print("hit");
+          widget.bookStorage.readBook(event.path).then((value) =>
+              localBookList.add(value));
+        }
+      }).onDone(() {
+        setState(() {
+          if (bookList.length <= localBookList.length) {
+            bookList = localBookList;
+          }
+        });
+      });
+    } catch (e) {
+      print("Error reading book list");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print("Scrollable init called");
+    _getBookList();
+  }
+
+
+  @override
+  void didUpdateWidget(ScrollableBookshelfSheet oldWidget) {
+    _getBookList();
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +70,23 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
         minChildSize: initialPercentage,
         initialChildSize: initialPercentage,
         builder: (context, scrollController) {
-          return AnimatedBuilder(
+          return bookList.isNotEmpty ? AnimatedBuilder(
             animation: scrollController,
             builder: (context, child) {
               double percentage = initialPercentage;
               double scaledPercentage = 0;
               if (scrollController.hasClients) {
                 percentage = (scrollController.position.viewportDimension) /
-                    (MediaQuery.of(context).size.height);
+                    (MediaQuery
+                        .of(context)
+                        .size
+                        .height);
                 //print("NS percentage: $percentage");
               } else {
                 percentage = 0;
               }
               scaledPercentage =
-                  (percentage - initialPercentage) / (0.9 - initialPercentage);
+                  (percentage - initialPercentage) / (0.8 - initialPercentage);
               if (scaledPercentage < 0) {
                 scaledPercentage = 0;
               }
@@ -50,13 +102,13 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                 child: Stack(
                   children: <Widget>[
                     Opacity(
-                      opacity: percentage >= 0.812 ? 1 : 0,
+                      opacity: percentage >= 0.8 ? 1 : 0,
                       child: ListView.builder(
                         padding: EdgeInsets.only(right: 32, top: 128),
                         controller: scrollController,
-                        itemCount: Book.books.length,
+                        itemCount: bookList.length,
                         itemBuilder: (context, index) {
-                          Book book = Book.books[index];
+                          Book book = bookList[index];
                           return MyBooksItem(
                             book: book,
                             percentageCompleted: percentage,
@@ -64,11 +116,11 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                         },
                       ),
                     ),
-                    ...Book.books.map((event) {
-                      int index = Book.books.indexOf(event);
+                    ...bookList.map((event) {
+                      int index = bookList.indexOf(event);
                       int heightPerElement = 120 + 8 + 8;
                       double widthPerElement =
-                          45 + percentage * 80 + 8 * (0.812 - percentage);
+                          45 + percentage * 80 + 8 * (0.8 - percentage);
                       double leftOffset = widthPerElement *
                           (index > 5 ? index + 2 : index) *
                           (1 - scaledPercentage);
@@ -81,7 +133,7 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                         child: IgnorePointer(
                           ignoring: true,
                           child: Opacity(
-                            opacity: percentage >= 0.812 ? 0 : 1,
+                            opacity: percentage >= 0.8 ? 0 : 1,
                             child: BookAnimationItem(
                               book: event,
                               percentageCompleted: percentage,
@@ -93,13 +145,19 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                     SheetHeader(
                       fontSize: 14 + percentage * 8,
                       topMargin:
-                          16 + percentage * MediaQuery.of(context).padding.top,
+                      16 + percentage * MediaQuery
+                          .of(context)
+                          .padding
+                          .top,
                     ),
                     //MenuButton(),
                   ],
                 ),
               );
             },
+          )
+              : Center(
+              child: Text("None in library")
           );
         },
       ),
@@ -120,7 +178,7 @@ class BookAnimationItem extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Transform.scale(
           alignment: Alignment.topLeft,
-          scale: 1 / 3 + 2.463054 / 3 * percentageCompleted,
+          scale: 1 / 3 + 2.363054 / 3 * percentageCompleted,
           child: SizedBox(
             height: 120,
             child: Row(
@@ -128,10 +186,10 @@ class BookAnimationItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.horizontal(
                     left: Radius.circular(16),
-                    right: Radius.circular(16 * (0.812 - percentageCompleted)),
+                    right: Radius.circular(16 * (0.8 - percentageCompleted)),
                   ),
-                  child: Image.asset(
-                    'assets/${book.assetName}',
+                  child: Image.file(
+                    File(book.assetName),
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
@@ -143,6 +201,7 @@ class BookAnimationItem extends StatelessWidget {
     );
   }
 }
+
 
 class MyBooksItem extends StatelessWidget {
   final Book book;
@@ -157,9 +216,9 @@ class MyBooksItem extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Transform.scale(
         alignment: Alignment.topLeft,
-        scale: 1 / 3 + 2.463054 / 3 * percentageCompleted,
+        scale: 1 / 3 + 2.363054 / 3 * percentageCompleted,
         child: GestureDetector(
-            //TODO on tap implemented for both scrolls
+          //TODO on tap implemented for both scrolls
             onTap: () {
               print("${book.title}");
             },
@@ -171,10 +230,10 @@ class MyBooksItem extends StatelessWidget {
                     borderRadius: BorderRadius.horizontal(
                       left: Radius.circular(16),
                       right:
-                          Radius.circular(16 * (0.812 - percentageCompleted)),
+                      Radius.circular(16 * (0.812 - percentageCompleted)),
                     ),
-                    child: Image.asset(
-                      'assets/${book.assetName}',
+                    child: Image.file(
+                      File(book.assetName),
                       width: 120,
                       height: 120,
                       fit: BoxFit.cover,
@@ -232,11 +291,11 @@ class MyBooksItem extends StatelessWidget {
           children: <Widget>[
             Flexible(
                 child: Text(
-              book.description,
-              maxLines: 4,
-              softWrap: true,
-              style: TextStyle(color: Colors.black, fontSize: 13),
-            ))
+                  book.description,
+                  maxLines: 4,
+                  softWrap: true,
+                  style: TextStyle(color: Colors.black, fontSize: 13),
+                ))
           ],
         )
       ],
@@ -248,8 +307,7 @@ class SheetHeader extends StatelessWidget {
   final double fontSize;
   final double topMargin;
 
-  const SheetHeader(
-      {Key key, @required this.fontSize, @required this.topMargin})
+  const SheetHeader({Key key, @required this.fontSize, @required this.topMargin})
       : super(key: key);
 
   @override
