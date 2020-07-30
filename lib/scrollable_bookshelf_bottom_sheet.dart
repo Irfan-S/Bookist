@@ -70,17 +70,14 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
         minChildSize: initialPercentage,
         initialChildSize: initialPercentage,
         builder: (context, scrollController) {
-          return bookList.isNotEmpty ? AnimatedBuilder(
+          return AnimatedBuilder(
             animation: scrollController,
             builder: (context, child) {
               double percentage = initialPercentage;
               double scaledPercentage = 0;
               if (scrollController.hasClients) {
                 percentage = (scrollController.position.viewportDimension) /
-                    (MediaQuery
-                        .of(context)
-                        .size
-                        .height);
+                    (MediaQuery.of(context).size.height);
                 //print("NS percentage: $percentage");
               } else {
                 percentage = 0;
@@ -94,22 +91,23 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
 //                  (percentage - initialPercentage) / ( 0.9- initialPercentage);
               print("Percentage is: $scaledPercentage");
               return Container(
-                padding: const EdgeInsets.only(left: 32),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF162A49),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-                ),
-                child: Stack(
-                  children: <Widget>[
-                    Opacity(
-                      opacity: percentage >= 0.8 ? 1 : 0,
-                      child: ListView.builder(
-                        padding: EdgeInsets.only(right: 32, top: 128),
-                        controller: scrollController,
-                        itemCount: bookList.length,
-                        itemBuilder: (context, index) {
-                          Book book = bookList[index];
-                          return MyBooksItem(
+                  padding: const EdgeInsets.only(left: 32),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF162A49),
+                    borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(32)),
+                  ),
+                  child: bookList.isNotEmpty ? Stack(
+                    children: <Widget>[
+                      Opacity(
+                        opacity: percentage >= 0.8 ? 1 : 0,
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(right: 32, top: 128),
+                          controller: scrollController,
+                          itemCount: bookList.length,
+                          itemBuilder: (context, index) {
+                            Book book = bookList[index];
+                            return MyBooksItem(
                             book: book,
                             percentageCompleted: percentage,
                           );
@@ -142,22 +140,22 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                         ),
                       );
                     }),
-                    SheetHeader(
-                      fontSize: 14 + percentage * 8,
-                      topMargin:
-                      16 + percentage * MediaQuery
-                          .of(context)
-                          .padding
-                          .top,
-                    ),
-                    //MenuButton(),
-                  ],
-                ),
+                      SheetHeader(
+                        fontSize: 14 + percentage * 8,
+                        topMargin:
+                        16 + percentage * MediaQuery
+                            .of(context)
+                            .padding
+                            .top,
+                      ),
+                      //MenuButton(),
+                    ],
+                  ) : Center(
+                      child: Text("None in library",
+                        style: TextStyle(color: Colors.white),)
+                  )
               );
             },
-          )
-              : Center(
-              child: Text("None in library")
           );
         },
       ),
