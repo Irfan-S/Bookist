@@ -3,15 +3,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bookist_app/data/book.dart';
+import 'package:bookist_app/models/BookModel.dart';
 import 'package:flutter/material.dart';
-
-import 'data/book_storage.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ScrollableBookshelfSheet extends StatefulWidget {
-  final BookStorage bookStorage;
-
-  ScrollableBookshelfSheet({Key key, @required this.bookStorage})
-      : super(key: key);
 
   @override
   _ScrollableBookshelfSheetState createState() =>
@@ -20,146 +16,113 @@ class ScrollableBookshelfSheet extends StatefulWidget {
 
 class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
   double initialPercentage = 0.15;
-  List<Book> bookList = [];
 
-
-  void _getBookList() async {
-    try {
-      String directory = await widget.bookStorage.localPath;
-      print("Directory is $directory");
-
-      List<Book> localBookList = [];
-      //Directory(directory).list().listen((event) {print(event.path);});
-      Directory(directory).list().listen((event) {
-        //print("File name ${event.path}");
-        if (event.path.endsWith(".txt")) {
-          // print("hit");
-          widget.bookStorage.readBook(event.path).then((value) =>
-              localBookList.add(value));
-        }
-      }).onDone(() {
-        setState(() {
-          if (bookList.length <= localBookList.length) {
-            bookList = localBookList;
-          }
-        });
-      });
-    } catch (e) {
-      print("Error reading book list");
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print("Scrollable init called");
-    _getBookList();
-  }
-
-
-  @override
-  void didUpdateWidget(ScrollableBookshelfSheet oldWidget) {
-    _getBookList();
-    super.didUpdateWidget(oldWidget);
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: DraggableScrollableSheet(
-        minChildSize: initialPercentage,
-        initialChildSize: initialPercentage,
-        builder: (context, scrollController) {
-          return AnimatedBuilder(
-            animation: scrollController,
-            builder: (context, child) {
-              double percentage = initialPercentage;
-              double scaledPercentage = 0;
-              if (scrollController.hasClients) {
-                percentage = (scrollController.position.viewportDimension) /
-                    (MediaQuery.of(context).size.height);
-                //print("NS percentage: $percentage");
-              } else {
-                percentage = 0;
-              }
-              scaledPercentage =
-                  (percentage - initialPercentage) / (0.8 - initialPercentage);
-              if (scaledPercentage < 0) {
-                scaledPercentage = 0;
-              }
+    return ScopedModelDescendant<BookModel>(
+        builder: (BuildContext context, Widget child, BookModel model) {
+          return Positioned.fill(
+            child: DraggableScrollableSheet(
+              minChildSize: initialPercentage,
+              initialChildSize: initialPercentage,
+              builder: (context, scrollController) {
+                return AnimatedBuilder(
+                  animation: scrollController,
+                  builder: (context, child) {
+                    double percentage = initialPercentage;
+                    double scaledPercentage = 0;
+                    if (scrollController.hasClients) {
+                      percentage =
+                          (scrollController.position.viewportDimension) /
+                              (MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height);
+                      //print("NS percentage: $percentage");
+                    } else {
+                      percentage = 0;
+                    }
+                    scaledPercentage =
+                        (percentage - initialPercentage) /
+                            (0.8 - initialPercentage);
+                    if (scaledPercentage < 0) {
+                      scaledPercentage = 0;
+                    }
 //              scaledPercentage =
 //                  (percentage - initialPercentage) / ( 0.9- initialPercentage);
-              print("Percentage is: $scaledPercentage");
-              return Container(
-                  padding: const EdgeInsets.only(left: 32),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF162A49),
-                    borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(32)),
-                  ),
-                  child: bookList.isNotEmpty ? Stack(
-                    children: <Widget>[
-                      Opacity(
-                        opacity: percentage >= 0.8 ? 1 : 0,
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(right: 32, top: 128),
-                          controller: scrollController,
-                          itemCount: bookList.length,
-                          itemBuilder: (context, index) {
-                            Book book = bookList[index];
-                            return MyBooksItem(
-                            book: book,
-                            percentageCompleted: percentage,
-                          );
-                        },
-                      ),
-                    ),
-                    ...bookList.map((event) {
-                      int index = bookList.indexOf(event);
-                      int heightPerElement = 120 + 8 + 8;
-                      double widthPerElement =
-                          45 + percentage * 80 + 8 * (0.8 - percentage);
-                      double leftOffset = widthPerElement *
-                          (index > 5 ? index + 2 : index) *
-                          (1 - scaledPercentage);
-                      return Positioned(
-                        top: 44.0 +
-                            scaledPercentage * (128 - 44) +
-                            index * heightPerElement * scaledPercentage,
-                        left: leftOffset,
-                        right: 32 - leftOffset,
-                        child: IgnorePointer(
-                          ignoring: true,
-                          child: Opacity(
-                            opacity: percentage >= 0.8 ? 0 : 1,
-                            child: BookAnimationItem(
-                              book: event,
-                              percentageCompleted: percentage,
-                            ),
-                          ),
+                    print("Percentage is: $scaledPercentage");
+                    return Container(
+                        padding: const EdgeInsets.only(left: 32),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF162A49),
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(32)),
                         ),
-                      );
-                    }),
-                      SheetHeader(
-                        fontSize: 14 + percentage * 8,
-                        topMargin:
-                        16 + percentage * MediaQuery
-                            .of(context)
-                            .padding
-                            .top,
-                      ),
-                      //MenuButton(),
-                    ],
-                  ) : Center(
-                      child: Text("None in library",
-                        style: TextStyle(color: Colors.white),)
-                  )
-              );
-            },
+                        child: model.bookList.isNotEmpty ? Stack(
+                          children: <Widget>[
+                            Opacity(
+                              opacity: percentage >= 0.7 ? 1 : 0,
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(right: 32, top: 128),
+                                controller: scrollController,
+                                itemCount: model.bookList.length,
+                                itemBuilder: (context, index) {
+                                  Book book = model.bookList[index];
+                                  return MyBooksItem(
+                                    book: book,
+                                    percentageCompleted: percentage,
+                                  );
+                                },
+                              ),
+                            ),
+                            ...model.bookList.map((event) {
+                              int index = model.bookList.indexOf(event);
+                              int heightPerElement = 120 + 8 + 8;
+                              double widthPerElement =
+                                  45 + percentage * 80 + 8 * (0.8 - percentage);
+                              double leftOffset = widthPerElement *
+                                  (index > 5 ? index + 2 : index) *
+                                  (1 - scaledPercentage);
+                              return Positioned(
+                                top: 44.0 +
+                                    scaledPercentage * (128 - 44) +
+                                    index * heightPerElement * scaledPercentage,
+                                left: leftOffset,
+                                right: 32 - leftOffset,
+                                child: IgnorePointer(
+                                  ignoring: true,
+                                  child: Opacity(
+                                    opacity: percentage >= 0.7 ? 0 : 1,
+                                    child: BookAnimationItem(
+                                      book: event,
+                                      percentageCompleted: percentage,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                            SheetHeader(
+                              fontSize: 14 + percentage * 8,
+                              topMargin:
+                              16 + percentage * MediaQuery
+                                  .of(context)
+                                  .padding
+                                  .top,
+                            ),
+                            //MenuButton(),
+                          ],
+                        ) : Center(
+                            child: Text("None in library",
+                              style: TextStyle(color: Colors.white),)
+                        )
+                    );
+                  },
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 }
 

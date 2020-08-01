@@ -1,15 +1,11 @@
 import 'dart:io';
 
-import 'package:bookist_app/data/book.dart';
+import 'package:bookist_app/models/BookModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
-import 'data/book_storage.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class SlidingCardsView extends StatefulWidget {
-  final BookStorage bookStorage;
-
-  SlidingCardsView({Key key, @required this.bookStorage}) : super(key: key);
 
   @override
   _SlidingCardsViewState createState() => _SlidingCardsViewState();
@@ -18,33 +14,7 @@ class SlidingCardsView extends StatefulWidget {
 class _SlidingCardsViewState extends State<SlidingCardsView> {
   PageController pageController;
   double pageOffset = 0;
-  List<Book> _books = [];
 
-  void _getBookList() async {
-    try {
-      String directory = await widget.bookStorage.localPath;
-      print("Directory is $directory");
-
-      List<Book> localBookList = [];
-      //Directory(directory).list().listen((event) {print(event.path);});
-      Directory(directory).list().listen((event) {
-        //print("File name ${event.path}");
-        if (event.path.endsWith(".txt")) {
-          //print("hit");
-          widget.bookStorage.readBook(event.path).then((value) =>
-              localBookList.add(value));
-        }
-      }).onDone(() {
-        setState(() {
-          if (_books.length <= localBookList.length) {
-            _books = localBookList;
-          }
-        });
-      });
-    } catch (e) {
-      print("Error reading book list");
-    }
-  }
 
 
   @override
@@ -53,16 +23,9 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
     pageController.addListener(() {
       setState(() => pageOffset = pageController.page);
     });
-    _getBookList();
     super.initState();
   }
 
-
-  @override
-  void didUpdateWidget(SlidingCardsView oldWidget) {
-    _getBookList();
-    super.didUpdateWidget(oldWidget);
-  }
 
   @override
   void dispose() {
@@ -77,19 +40,23 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
             .of(context)
             .size
             .height * 0.55,
-        child: _books.isNotEmpty ? PageView(
-            controller: pageController,
-            children: List.generate(
-                _books.length,
-                    (index) =>
-                    SlidingCard(
-                      title: _books[index].title,
-                      author: _books[index].author.toString(),
-                      assetName: _books[index].assetName,
-                      offset: pageOffset - index,
-                    ))
+        child: ScopedModelDescendant<BookModel>(
+            builder: (BuildContext context, Widget child, BookModel model) {
+              return model.bookList.isNotEmpty ? PageView(
+                  controller: pageController,
+                  children: List.generate(
+                      model.bookList.length,
+                          (index) =>
+                          SlidingCard(
+                            title: model.bookList[index].title,
+                            author: model.bookList[index].author.toString(),
+                            assetName: model.bookList[index].assetName,
+                            offset: pageOffset - index,
+                          ))
+              )
+                  : Center(child: Text("No books found"),);
+            }
         )
-            : Center(child: Text("No books found"),)
     );
   }
 }

@@ -1,118 +1,101 @@
 import 'package:bookist_app/add_new_book.dart';
-import 'package:bookist_app/data/book_storage.dart';
+import 'package:bookist_app/models/BookModel.dart';
 import 'package:bookist_app/scrollable_bookshelf_bottom_sheet.dart';
 import 'package:bookist_app/sliding_cards.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class HomePage extends StatelessWidget {
+  bool isInit = true;
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-            appBar: AppBar(
-              title: Header(),
-              backgroundColor: Colors.white,
-              elevation: 0,
-              bottom: TabBar(
-                  unselectedLabelColor: Colors.grey,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  labelColor: Colors.black,
-                  indicator:
-                      RectTabIndicator(color: Color(0xFFFF5A1D), radius: 5),
-                  tabs: [
-                    Tab(
-                      child: Container(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Reading"),
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Container(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Search"),
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Container(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("Profile"),
-                        ),
-                      ),
-                    ),
-                  ]),
-            ),
-            body: Scaffold(
-              backgroundColor: Colors.white,
-              body: TabBarView(
-                children: [
-                  Stack(
-                    children: <Widget>[
-                      SafeArea(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(height: 8),
-                            //Header(),
-                            SizedBox(height: 40),
-                            SizedBox(height: 8),
-                            SlidingCardsView(bookStorage: BookStorage()),
-                          ],
-                        ),
-                      ),
-                      ScrollableBookshelfSheet(bookStorage: BookStorage())
-                      //, //use this or ScrollableExhibitionSheet//
-                    ],
-                  ),
-                  Icon(Icons.directions_car),
-                  Icon(Icons.directions_transit)
-                ],
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            NewBookPage(bookStorage: BookStorage())),
-                  );
-                  // Add your onPressed code here!
-                },
-                child: Icon(
-                  Icons.add,
-                  color: Color(0xFF162A49),
-                ),
+    return ScopedModelDescendant<BookModel>(
+        builder: (BuildContext context, Widget child, BookModel model) {
+      return DefaultTabController(
+          length: 3,
+          child: Scaffold(
+              appBar: AppBar(
+                title: Header(),
                 backgroundColor: Colors.white,
+                elevation: 0,
+                bottom: TabBar(
+                    unselectedLabelColor: Colors.grey,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    labelColor: Colors.black,
+                    indicator:
+                        RectTabIndicator(color: Color(0xFFFF5A1D), radius: 5),
+                    tabs: [
+                      Tab(
+                        child: Container(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text("Reading"),
+                          ),
+                        ),
+                      ),
+                      Tab(
+                        child: Container(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text("Search"),
+                          ),
+                        ),
+                      ),
+                      Tab(
+                        child: Container(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text("Profile"),
+                          ),
+                        ),
+                      ),
+                    ]),
               ),
-            )));
-
-//    return Scaffold(
-//      backgroundColor: Colors.white,
-//      body: Stack(
-//        children: <Widget>[
-//          SafeArea(
-//            child: Column(
-//              crossAxisAlignment: CrossAxisAlignment.start,
-//              children: <Widget>[
-//                SizedBox(height: 8),
-//                Header(),
-//                SizedBox(height: 40),
-//                Tabs(),
-//                SizedBox(height: 8),
-//                SlidingCardsView(),
-//              ],
-//            ),
-//          ),
-//          ScrollableBookshelfSheet(), //use this or ScrollableExhibitionSheet//
-//        ],
-//      ),
-//    );
+              body: Scaffold(
+                backgroundColor: Colors.white,
+                body: TabBarView(
+                  children: [
+                    Stack(
+                      children: <Widget>[
+                        SafeArea(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(height: 8),
+                              //Header(),
+                              SizedBox(height: 40),
+                              SizedBox(height: 8),
+                              SlidingCardsView(),
+                            ],
+                          ),
+                        ),
+                        ScrollableBookshelfSheet()
+                        //, //use this or ScrollableExhibitionSheet//
+                      ],
+                    ),
+                    Icon(Icons.directions_car),
+                    Icon(Icons.directions_transit)
+                  ],
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<NewBookPage>(
+                          builder: (context) => NewBookPage()),
+                    );
+                    // Add your onPressed code here!
+                  },
+                  child: Icon(
+                    Icons.add,
+                    color: Color(0xFF162A49),
+                  ),
+                  backgroundColor: Colors.white,
+                ),
+              )));
+    });
   }
 }
 
