@@ -126,7 +126,6 @@ class _NewBookPageState extends State<NewBookPage> {
                 onPressed: () {
                   Book newBook = Book.fromJson(json.decode(
                       '{"assetName":"$_imgPath","isbn": "NA","title": "${titleController.text}","author":["${authorController.text}"],"description":"NA","publisher": "${publisherController.text}","notes": [], "chapters":[],"complete":false}'));
-//                _createBook(book);
                   model.addNewBook(newBook);
                   Navigator.pop(context);
                 },

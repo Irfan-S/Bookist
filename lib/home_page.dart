@@ -149,7 +149,5 @@ class _RectPainter extends BoxPainter {
         RRect.fromRectAndRadius(
             circleOffset & Size(20, 6), Radius.circular(10)),
         _paint);
-//    canvas.drawRRect(circleOffset & Size(20,6), _paint);
-    //canvas.drawCircle(circleOffset, radius, _paint);
   }
 }

@@ -15,8 +15,6 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
   PageController pageController;
   double pageOffset = 0;
 
-
-
   @override
   void initState() {
     pageController = PageController(viewportFraction: 0.8);

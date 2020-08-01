@@ -26,6 +26,10 @@ class BookModel extends Model {
     _getBookList();
   }
 
+  /// Fetches list of .txt files at [_bookStorage.localPath]
+  ///
+  /// Data stored in a .txt extension, which is then fetched , read and stored at [_bookList]
+  ///
   void _getBookList() async {
     try {
       String directory = await _bookStorage.localPath;

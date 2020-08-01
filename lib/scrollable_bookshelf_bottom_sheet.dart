@@ -39,7 +39,6 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                                   .of(context)
                                   .size
                                   .height);
-                      //print("NS percentage: $percentage");
                     } else {
                       percentage = 0;
                     }
@@ -49,8 +48,6 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                     if (scaledPercentage < 0) {
                       scaledPercentage = 0;
                     }
-//              scaledPercentage =
-//                  (percentage - initialPercentage) / ( 0.9- initialPercentage);
                     print("Percentage is: $scaledPercentage");
                     return Container(
                         padding: const EdgeInsets.only(left: 32),
@@ -115,16 +112,19 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                         ) : Center(
                             child: Text("None in library",
                               style: TextStyle(color: Colors.white),)
-                        )
-                    );
-                  },
-                );
+                        ));
               },
-            ),
-          );
-        });
+            );
+          },
+        ),
+      );
+    });
   }
 }
+
+/// Animated item to display on [ScrollableBookshelfSheet] when pulled.
+///
+/// Creates an image element from [Book] that transitions from the bottom to the left of screen along with scaling.
 
 class BookAnimationItem extends StatelessWidget {
   final Book book;
@@ -163,6 +163,9 @@ class BookAnimationItem extends StatelessWidget {
   }
 }
 
+/// Book list item that lists inside [ScrollableBookshelfSheet] after rendering.
+///
+/// Creates a list tile element for [Book]
 
 class MyBooksItem extends StatelessWidget {
   final Book book;

@@ -1,12 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bookist_app/data/book.dart';
 import 'package:path_provider/path_provider.dart';
-
-Book bookFromJson(String str) => Book.fromJson(json.decode(str));
-
-String bookToJson(Book data) => json.encode(data.toJson());
 
 class BookStorage {
   Future<String> get localPath async {
