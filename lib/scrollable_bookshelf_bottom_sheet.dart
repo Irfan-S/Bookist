@@ -52,10 +52,15 @@ class _ScrollableBookshelfSheetState extends State<ScrollableBookshelfSheet> {
                     return Container(
                         padding: const EdgeInsets.only(left: 32),
                         decoration: const BoxDecoration(
-                          color: Color(0xFF162A49),
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(32)),
-                        ),
+                      gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [Color(0xFF0a1943), Color(0xFF143582)]),
+//                          color: Color.fromRGBO(180, 140, 104, 1.0),
+//                          color: Color(0xFF162A49),
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(32)),
+                    ),
                         child: model.bookList.isNotEmpty ? Stack(
                           children: <Widget>[
                             Opacity(
@@ -282,9 +287,6 @@ class SheetHeader extends StatelessWidget {
       child: IgnorePointer(
         child: Container(
           padding: EdgeInsets.only(top: topMargin, bottom: 12),
-          decoration: const BoxDecoration(
-            color: Color(0xFF162A49),
-          ),
           child: Text(
             'Your Library',
             style: TextStyle(

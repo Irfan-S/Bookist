@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:bookist_app/book_page.dart';
+import 'package:bookist_app/data/book.dart';
 import 'package:bookist_app/models/BookModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class SlidingCardsView extends StatefulWidget {
-
   @override
   _SlidingCardsViewState createState() => _SlidingCardsViewState();
 }
@@ -46,9 +47,7 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
                       model.bookList.length,
                           (index) =>
                           SlidingCard(
-                            title: model.bookList[index].title,
-                            author: model.bookList[index].author.toString(),
-                            assetName: model.bookList[index].assetName,
+                            currentBook: model.bookList[index],
                             offset: pageOffset - index,
                           ))
               )
@@ -61,17 +60,14 @@ class _SlidingCardsViewState extends State<SlidingCardsView> {
 
 
 class SlidingCard extends StatelessWidget {
-  final String title;
-  final String author;
-  final String assetName;
+
+  final Book currentBook;
   final double offset;
 
   const SlidingCard({
     Key key,
-    @required this.title,
-    @required this.author,
-    @required this.assetName,
     @required this.offset,
+    @required this.currentBook
   }) : super(key: key);
 
   @override
@@ -84,12 +80,16 @@ class SlidingCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
       child: GestureDetector(
         onTap: () {
-          print("$title");
+          Navigator.push(
+            context,
+            MaterialPageRoute<BookPage>(
+                builder: (context) => BookPage(currentBook)),
+          );
         },
         child: ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.circular(32),
           child: Image.file(
-            File(assetName),
+            File(currentBook.assetName),
             height: MediaQuery
                 .of(context)
                 .size
@@ -99,69 +99,7 @@ class SlidingCard extends StatelessWidget {
           ),
         ),
       ),
-//    Column(
-//      children: <Widget>[
-////            Image.asset(
-////              'assets/$assetName',
-////              height: MediaQuery.of(context).size.height * 0.3,
-////              alignment: Alignment(-offset.abs(), 0),
-////              fit: BoxFit.contain,
-////            ),
-//        ClipRRect(
-//          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-//          child: Image.asset(
-//            'assets/$assetName',
-//            height: MediaQuery.of(context).size.height * 0.3,
-//            alignment: Alignment(-offset.abs(), 0),
-//            fit: BoxFit.contain,
-//          ),
-//        ),
-//        SizedBox(height: 8),
-//        Expanded(
-//          child: CardContent(
-//            title: title,
-//            author: author,
-//            offset: gauss,
-//          ),
-//        ),
-//      ],
     );
-//  );
-//    return Transform.translate(
-//      offset: Offset(-32 * gauss * offset.sign, 0),
-//      child: Card(
-//        margin: EdgeInsets.only(left: 8, right: 8, bottom: 24),
-//        elevation: 8,
-//        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-//        child: Column(
-//          children: <Widget>[
-//            Image.asset(
-//              'assets/$assetName',
-//              height: MediaQuery.of(context).size.height * 0.3,
-//              alignment: Alignment(-offset.abs(), 0),
-//              fit: BoxFit.contain,
-//            ),
-//            ClipRRect(
-//              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-//              child: Image.asset(
-//                'assets/$assetName',
-//                height: MediaQuery.of(context).size.height * 0.3,
-//                alignment: Alignment(-offset.abs(), 0),
-//                fit: BoxFit.contain,
-//              ),
-//            ),
-//            SizedBox(height: 8),
-//            Expanded(
-//              child: CardContent(
-//                title: title,
-//                author: author,
-//                offset: gauss,
-//              ),
-//            ),
-//          ],
-//        ),
-//      ),
-//    );
   }
 }
 

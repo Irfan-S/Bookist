@@ -7,93 +7,100 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class HomePage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<BookModel>(
         builder: (BuildContext context, Widget child, BookModel model) {
       return DefaultTabController(
           length: 3,
-          child: Scaffold(
-              appBar: AppBar(
-                title: Header(),
-                backgroundColor: Colors.white,
-                elevation: 0,
-                bottom: TabBar(
-                    unselectedLabelColor: Colors.grey,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    labelColor: Colors.black,
-                    indicator:
-                        RectTabIndicator(color: Color(0xFFFF5A1D), radius: 5),
-                    tabs: [
-                      Tab(
-                        child: Container(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Reading"),
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Container(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Search"),
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Container(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Profile"),
-                          ),
-                        ),
-                      ),
-                    ]),
+          child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Color(0xFFffffff), Color(0xFFfaf2c4)]),
               ),
-              body: Scaffold(
-                backgroundColor: Colors.white,
-                body: TabBarView(
-                  children: [
-                    Stack(
-                      children: <Widget>[
-                        SafeArea(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SizedBox(height: 8),
-                              //Header(),
-                              SizedBox(height: 40),
-                              SizedBox(height: 8),
-                              SlidingCardsView(),
-                            ],
+              child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  appBar: AppBar(
+                    backgroundColor: Colors.transparent,
+                    title: Header(),
+                    elevation: 0,
+                    bottom: TabBar(
+                        unselectedLabelColor: Colors.grey,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        labelColor: Colors.black,
+                        indicator: RectTabIndicator(
+                            color: Color(0xFF202143), radius: 5),
+                        tabs: [
+                          Tab(
+                            child: Container(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text("Reading"),
+                              ),
+                            ),
                           ),
+                          Tab(
+                            child: Container(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text("Search"),
+                              ),
+                            ),
+                          ),
+                          Tab(
+                            child: Container(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text("Profile"),
+                              ),
+                            ),
+                          ),
+                        ]),
+                  ),
+                  body: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: TabBarView(
+                      children: [
+                        Stack(
+                          children: <Widget>[
+                            SafeArea(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(height: 8),
+                                  //Header(),
+                                  SizedBox(height: 40),
+                                  SizedBox(height: 8),
+                                  SlidingCardsView(),
+                                ],
+                              ),
+                            ),
+                            ScrollableBookshelfSheet()
+                            //, //use this or ScrollableExhibitionSheet//
+                          ],
                         ),
-                        ScrollableBookshelfSheet()
-                        //, //use this or ScrollableExhibitionSheet//
+                        Icon(Icons.directions_car),
+                        Icon(Icons.directions_transit)
                       ],
                     ),
-                    Icon(Icons.directions_car),
-                    Icon(Icons.directions_transit)
-                  ],
-                ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<NewBookPage>(
-                          builder: (context) => NewBookPage()),
-                    );
-                    // Add your onPressed code here!
-                  },
-                  child: Icon(
-                    Icons.add,
-                    color: Color(0xFF162A49),
-                  ),
-                  backgroundColor: Colors.white,
-                ),
-              )));
+                    floatingActionButton: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<NewBookPage>(
+                              builder: (context) => NewBookPage()),
+                        );
+                        // Add your onPressed code here!
+                      },
+                      child: Icon(
+                        Icons.add,
+                        color: Color(0xFF162A49),
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
+                  ))));
     });
   }
 }
@@ -137,8 +144,8 @@ class _RectPainter extends BoxPainter {
 
   _RectPainter(Color color, this.radius)
       : _paint = Paint()
-    ..color = color
-    ..isAntiAlias = true;
+          ..color = color
+          ..isAntiAlias = true;
 
   @override
   void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {

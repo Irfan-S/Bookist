@@ -34,16 +34,15 @@ class BookModel extends Model {
     try {
       String directory = await _bookStorage.localPath;
       print("Directory is $directory");
-
+      _bookList.clear();
       //Directory(directory).list().listen((event) {print(event.path);});
       Directory(directory).list().listen((event) {
         //print("File name ${event.path}");
         if (event.path.endsWith(".txt")) {
           print("hit");
-          _bookStorage.readBook(event.path).then((value) => {
-                if (!_bookList.contains(value))
-                  {_bookList.add(value), _notifyParent()}
-              });
+          _bookStorage
+              .readBook(event.path)
+              .then((value) => {_bookList.add(value), _notifyParent()});
         }
       }).onDone(() {
         print("New books: ${_bookList.length}");
