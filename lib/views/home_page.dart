@@ -1,7 +1,7 @@
-import 'package:bookist_app/add_new_book.dart';
 import 'package:bookist_app/models/BookModel.dart';
-import 'package:bookist_app/scrollable_bookshelf_bottom_sheet.dart';
-import 'package:bookist_app/sliding_cards.dart';
+import 'package:bookist_app/views/add_new_book.dart';
+import 'package:bookist_app/views/scrollable_bookshelf_bottom_sheet.dart';
+import 'package:bookist_app/widgets/sliding_cards.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';

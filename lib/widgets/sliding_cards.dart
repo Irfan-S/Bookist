@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:bookist_app/book_page.dart';
 import 'package:bookist_app/data/book.dart';
 import 'package:bookist_app/models/BookModel.dart';
+import 'package:bookist_app/views/book_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:scoped_model/scoped_model.dart';

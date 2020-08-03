@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'data/book.dart';
+import '../data/book.dart';
 
 class NewBookPage extends StatefulWidget {
   @override
@@ -42,8 +42,6 @@ class _NewBookPageState extends State<NewBookPage> {
             builder: (BuildContext context, Widget child, BookModel model) {
           return Column(
             children: <Widget>[
-//            Flexible(
-//                fit: FlexFit.tight,
               GestureDetector(
                 onTap: () {
                   getImage();
