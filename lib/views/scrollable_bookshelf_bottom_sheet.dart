@@ -230,6 +230,10 @@ class MyBooksItem extends StatelessWidget {
   }
 
   Widget _buildContent() {
+    String bookAuthor = book.author.toString();
+    print(bookAuthor);
+    bookAuthor = bookAuthor.replaceAll("\[", "").replaceAll("\]", "");
+
     return Column(
       children: <Widget>[
         Text(book.title, style: TextStyle(fontSize: 16)),
@@ -237,7 +241,7 @@ class MyBooksItem extends StatelessWidget {
         Row(
           children: <Widget>[
             Text(
-              book.author.toString(),
+              bookAuthor,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 12,
